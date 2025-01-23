@@ -82,7 +82,7 @@ class ImageHandler:
 
 with ui.dialog() as error_dialog, ui.card():
             ui.label('Please enter a filename before downloading').classes('text-red-500')
-            ui.button('Close', on_click=error_dialog.close).tailwind('bg-red-500 text-white')
+            ui.button('Close', on_click=error_dialog.close).tailwind('bg-red-500 text-white').element
 
 def download_image():
     if filename_text.value:
@@ -100,7 +100,7 @@ with ui.column().classes('mx-auto w-full max-w-5xl p-4 bg-white shadow-md rounde
 
     with ui.column().classes('w-full'):
         ui.label('Upload an image to get started').classes('text-lg text-center w-full text-gray-600')
-        ui.upload(on_upload=handler.upload_image).tailwind.width('w-1/3 mx-auto')
+        ui.upload(on_upload=handler.upload_image).tailwind.width('w-1/3 mx-auto').element
 
     ui.separator()
 
@@ -130,7 +130,7 @@ with ui.column().classes('mx-auto w-full max-w-5xl p-4 bg-white shadow-md rounde
         ui.label().bind_text_from(quality_slider, 'value', lambda value: f'Quality: {value}%').classes('text-center w-full')
         
         filename_text = ui.input(label='Enter filename').classes('mx-auto')
-        ui.button('Download as WebP', on_click=download_image).tailwind.width('w-1/3 mx-auto')
+        ui.button('Download as WebP', on_click=download_image).tailwind.width('w-1/3 mx-auto').element
 
 port = int(os.getenv('PORT', 8080))
 
