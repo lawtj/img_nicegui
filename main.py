@@ -8,11 +8,13 @@ class ImageHandler:
         self.image = None
         self._dimensions = 'Image dimensions: 0x0'  # Default text
         self.istransparent = False
+        self.quality = 80  # Default quality value
 
-    def save_image(self):
+    def save_image(self) -> bytes | None:
         if self.image:
-            output=BytesIO()
-            self.image.save(output, format='PNG')
+            output = BytesIO()
+            # Save as WebP with the specified quality
+            self.image.save(output, format='WEBP', quality=self.quality)
             output.seek(0)
             return output.getvalue()
         return None
@@ -85,7 +87,7 @@ with ui.dialog() as error_dialog, ui.card():
 def download_image():
     if filename_text.value:
         print('Downloading image')
-        ui.download(handler.save_image(), filename=f'{filename_text.value}.png', media_type='image/png')
+        ui.download(handler.save_image(), filename=f'{filename_text.value}.webp', media_type='image/webp')
     else:
         print('Please enter a filename before downloading')
         error_dialog.open()
@@ -117,11 +119,18 @@ with ui.column().classes('mx-auto w-full max-w-5xl p-4 bg-white shadow-md rounde
     ui.separator()
 
     with ui.column().classes('w-full flex justify-center align-items-center'):
-        ui.label('Image dimensions: 0x0').bind_text(handler, 'dimensions').classes('text-gray-600 text-center w-full')  # Softer text for secondary info
+        ui.label('Image dimensions: 0x0').bind_text(handler, 'dimensions').classes('text-gray-600 text-center w-full')
         viewer = ui.image().classes('w-96 mx-auto mt-4 border border-gray-300')  
         viewer.bind_source(handler, 'image')
-        filename_text= ui.input(label='Enter filename').classes('mx-auto')
-        ui.button('Download as PNG', on_click=download_image).tailwind.width('w-1/3 mx-auto')
+        
+        # Add quality slider
+        ui.label('Export Quality').classes('text-center w-full mt-4')
+        quality_slider = ui.slider(min=1, max=100, value=80, step=1).classes('w-64 mx-auto')
+        quality_slider.bind_value(handler, 'quality')
+        ui.label().bind_text_from(quality_slider, 'value', lambda value: f'Quality: {value}%').classes('text-center w-full')
+        
+        filename_text = ui.input(label='Enter filename').classes('mx-auto')
+        ui.button('Download as WebP', on_click=download_image).tailwind.width('w-1/3 mx-auto')
 
 port = int(os.getenv('PORT', 8080))
 
